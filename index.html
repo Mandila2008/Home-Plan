@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>දෙමහල් නිවාස හා ගොඩනැගිලි සැලැස්ම | Architectural House Plan - Rajagiriya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-blue: #0284c7;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Nirmala UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glows */
+    .glow-1 {
+      position: fixed;
+      top: -150px;
+      left: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-2 {
+      position: fixed;
+      bottom: -150px;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.8);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    }
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Hero Banner */
+    .hero-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    @media (max-width: 900px) {
+      .hero-card { grid-template-columns: 1fr; }
+    }
+    .hero-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+      margin-bottom: 1.25rem;
+    }
+    .lot-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+    .lot-stat {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.85rem;
+    }
+    .lot-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .lot-stat-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 0.2rem;
+    }
+
+    /* Tab Navigation */
+    .tabs-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.4rem;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-wrapper::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      padding: 0.65rem 1.25rem;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Main Content Area */
+    .viewer-layout {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .viewer-layout { grid-template-columns: 1fr; }
+    }
+
+    .plan-canvas-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    .plan-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .plan-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .plan-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .image-container {
+      background: #0f172a;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 520px;
+      position: relative;
+    }
+    .image-watermark {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(2, 132, 199, 0.5);
+      color: #38bdf8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .image-watermark-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #0284c7;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    /* Specification Sidebar */
+    .specs-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .spec-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+    .spec-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-cyan);
+    }
+
+    .room-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .room-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    .room-name {
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+    .room-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .room-dim {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-align: right;
+    }
+
+    .key-points-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .key-points-list li {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      display: flex;
+      gap: 0.5rem;
+      line-height: 1.45;
+    }
+    .key-points-list li span.bullet {
+      color: var(--accent-green);
+      font-weight: 800;
+    }
+
+    /* Section Details Grid */
+    .details-section {
+      margin-top: 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .info-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.5rem;
+    }
+    .info-box h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .info-box p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+    }
+    .table-custom th {
+      text-align: left;
+      padding: 0.6rem;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .table-custom td {
+      padding: 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-sub);
+    }
+
+    footer {
+      margin-top: 4rem;
+      border-top: 1px solid var(--card-border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">N</div>
+      <div class="brand-text">
+        <h1>NETH MEDIA SOLUTIONS</h1>
+        <p>Architectural Planning & 3D Visualization Consultancy</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge"><div class="badge-dot"></div> Lot 1 | 4.34 Perches</div>
+      <div class="badge">බණ්ඩාරනායකපුර, රාජගිරිය</div>
+      <div class="badge">කෝට්ටේ මහා නගර සභා සීමාව</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Banner -->
+    <div class="hero-card">
+      <div>
+        <h2 class="hero-title">නවීන දෙමහල් නිවාස හා ගොඩනැගිලි සැලැස්ම</h2>
+        <p class="hero-subtitle">
+          ප්ලෑන් අංක 11601 (H.D.J.L. Marrtinus - Licensed Surveyor) අනුව බණ්ඩාරනායකපුර පාරට මුහුණලා පිහිටි පර්චස් 4.34 ක ඉඩම සඳහා (Ground Floor Car Park + 4 Rooms, Rear Stairs, 1st Floor Slab + 3ft Corridor, Rooftop Slab) අඩංගු කර Neth Media Solutions විසින් සකස් කරන ලද වාස්තු විද්‍යාත්මක හා ඉංජිනේරු සැලැස්ම.
+        </p>
+      </div>
+      <div class="lot-details-grid">
+        <div class="lot-stat">
+          <div class="lot-stat-label">ඉඩමේ ප්‍රමාණය</div>
+          <div class="lot-stat-value">4.34 Perch</div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">109.8 m² / 1,181 sq.ft</span>
+        </div>
+        <div class="lot-stat">
+          <div class="lot-stat-label">ගොඩනැගිලි පළල</div>
+          <div class="lot-stat-value">26' - 0"</div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">7.92 Meters</span>
+        </div>
+        <div class="lot-stat">
+          <div class="lot-stat-label">ගොඩනැගිලි දිග</div>
+          <div class="lot-stat-value">39' - 0"</div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">11.88 Meters</span>
+        </div>
+        <div class="lot-stat">
+          <div class="lot-stat-label">මුළු බිම් ප්‍රමාණය</div>
+          <div class="lot-stat-value">~2,800 sq.ft</div>
+          <span style="font-size: 0.72rem; color: var(--accent-green);">3 Levels Total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tabs-wrapper">
+      <button class="tab-btn active" onclick="switchTab('gf')">
+        <span>🚗</span> බිම් මහල (Ground Floor)
+      </button>
+      <button class="tab-btn" onclick="switchTab('f1a')">
+        <span>🏢</span> 1st Floor (Option A: කාමර 8)
+      </button>
+      <button class="tab-btn" onclick="switchTab('f1b')">
+        <span>🏡</span> 1st Floor (Option B: විශාල කාමර 4)
+      </button>
+      <button class="tab-btn" onclick="switchTab('roof')">
+        <span>☀️</span> වහල ස්ලැබ් එක (Rooftop Slab)
+      </button>
+      <button class="tab-btn" onclick="switchTab('3d')">
+        <span>🏛️</span> 3D බාහිර පෙනුම (Exterior 3D)
+      </button>
+      <button class="tab-btn" onclick="switchTab('3d_cut')">
+        <span>📐</span> 3D අභ්‍යන්තර සැලැස්ම (Floor Cutaway)
+      </button>
+      <button class="tab-btn" onclick="switchTab('site')">
+        <span>📍</span> ඉඩමේ මායිම් (Site Boundary)
+      </button>
+    </div>
+
+    <!-- Viewer & Spec Sidebar Layout -->
+    <div class="viewer-layout">
+      <!-- Blueprint Card -->
+      <div class="plan-canvas-card">
+        <div class="plan-toolbar">
+          <div class="plan-title" id="currentPlanTitle">බිම් මහල සැලැස්ම (Ground Floor Plan)</div>
+          <div class="plan-actions">
+            <a id="btnDownload" href="drawings/ground_floor_plan.png" download class="btn-action">
+              <span>💾</span> Save High-Res Blueprint
+            </a>
+            <button onclick="window.print()" class="btn-action">
+              <span>🖨️</span> Print Plan
+            </button>
+          </div>
+        </div>
+
+        <div class="image-container">
+          <img id="planViewerImg" src="drawings/ground_floor_plan.png" alt="Architectural Plan">
+          <div class="image-watermark">
+            <div class="image-watermark-dot"></div>
+            <span>NETH MEDIA SOLUTIONS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specs Sidebar -->
+      <div class="specs-sidebar">
+        <!-- Room Schedule Card -->
+        <div class="spec-card">
+          <h3 id="scheduleTitle"><span>📋</span> බිම් මහලේ කාමර විස්තරය</h3>
+          <div class="room-list" id="roomScheduleList">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Design Highlights -->
+        <div class="spec-card">
+          <h3><span>💡</span> සැලසුමේ විශේෂාංග (Key Highlights)</h3>
+          <ul class="key-points-list" id="highlightsList">
+            <!-- Populated dynamically via JS -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Construction & Municipal Council Information -->
+    <div class="details-section">
+      <!-- Kotte MC Guidelines -->
+      <div class="info-box">
+        <h2><span>🏛️</span> කෝට්ටේ මහා නගර සභා අනුමැතිය (KMC Regulations)</h2>
+        <p>මෙම ඉඩම පිහිටා ඇත්තේ රාජගිරිය වැලිකඩ බණ්ඩාරනායකපුර පාර අසල බැවින් කෝට්ටේ මහා නගර සභාවේ සහ නාගරික සංවර්ධන අධිකාරියේ (UDA) අනුමැතිය ලබාගත යුතුය.</p>
+        <table class="table-custom">
+          <tr><th>මායිම් රීතිය</th><th>අවශ්‍යතාවය</th><th>සැලසුමේ පිරිවිතර</th></tr>
+          <tr><td>ප්‍රධාන පාර (Front Road)</td><td>අඩි 20-25 පාරේ මධ්‍ය ලක්ෂ්‍යයෙන් වීදි රේඛාව</td><td>නියමිත පරිදි ඉඩ තබා ඇත</td></tr>
+          <tr><td>පසුපස ඉඩ (Rear Setback)</td><td>අවම මීටර් 2.3 - 3.0 (කවුළු ඇත්නම්)</td><td>පඩි පෙළ සහ Blind Wall අනුමැතිය</td></tr>
+          <tr><td>පැති මායිම් (Side Setbacks)</td><td>ජනේල ඇත්නම් මීටර් 1.0 (අඩි 3' 3")</td><td>වම් පැත්තේ Air-voids / Blind wall</td></tr>
+          <tr><td>ස්ලැබ් වතුර බැසයාම</td><td>තමන්ගේ ඉඩම තුළටම වැසි ජලය</td><td>පයිප්ප මගින් කාණු පද්ධතියට</td></tr>
+        </table>
+      </div>
+
+      <!-- Structural & Slab Details -->
+      <div class="info-box">
+        <h2><span>🏗️</span> ස්ලැබ් සහ කොන්ක්‍රීට් ව්‍යුහය (Structural Specs)</h2>
+        <p>ඉඩම මුළුමනින්ම ආවරණය වන පරිදි පළමු මහලේ ස්ලැබ් එක සහ වහලයේ ස්ලැබ් එක දැමීමේදී අනුගමනය කළ යුතු තාක්ෂණික මිනුම්:</p>
+        <table class="table-custom">
+          <tr><th>කොටස</th><th>නිර්දේශිත පිරිවිතර (Specifications)</th></tr>
+          <tr><td>කොන්ක්‍රීට් ස්ලැබ් ඝනකම</td><td>අඟල් 5 (125mm) - Grade 25 / 30 Ready-mix</td></tr>
+          <tr><td>යකඩ කම්බි (Reinforcement)</td><td>10mm / 12mm Tor Steel (T10 / T12 @ 150mm c/c)</td></tr>
+          <tr><td>කොන්ක්‍රීට් කණු (Columns)</td><td>අඟල් 9" x 12" හෝ 9" x 9" (4 Nos Y16 + R6 links)</td></tr>
+          <tr><td>පඩි පෙළ (Staircase)</td><td>Riser 6" - 7", Tread 10", පළල අඩි 3' 6"</td></tr>
+          <tr><td>වහල ස්ලැබ් Water-proofing</td><td>Waterproofing membrane + Screed with 1:100 slope</td></tr>
+        </table>
+      </div>
+
+      <!-- Cost Estimate -->
+      <div class="info-box">
+        <h2><span>💰</span> දළ ඉදිකිරීම් ඇස්තමේන්තුව (Estimated Cost 2026/2027)</h2>
+        <p>රාජගිරිය ප්‍රදේශයේ වර්ග අඩියක් සඳහා සාමාන්‍ය ගොඩනැගිලි ඉදිකිරීම් මිල ගණන් අනුව:</p>
+        <table class="table-custom">
+          <tr><th>මහල / අංගය</th><th>වර්ග අඩි</th><th>දළ පිරිවැය (LKR)</th></tr>
+          <tr><td>බිම් මහල (Car park + 4 Rooms)</td><td>1,014 sq.ft</td><td>රු. මිලියන 8.5 - 11.0</td></tr>
+          <tr><td>පළමු මහල (Corridor + Rooms + Balcony)</td><td>1,014 sq.ft</td><td>රු. මිලියන 9.0 - 12.0</td></tr>
+          <tr><td>වහල ස්ලැබ් එක (Waterproofing + Parapet)</td><td>1,014 sq.ft</td><td>රු. මිලියන 2.5 - 3.5</td></tr>
+          <tr><td>මුළු ගොඩනැගිල්ල (Full Complete)</td><td>~2,800 sq.ft</td><td>රු. මිලියන 20 - 26.5</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <footer style="margin-top: 4rem; padding: 2.5rem 1rem; border-top: 1px solid var(--card-border); text-align: center; background: rgba(9, 13, 22, 0.95); border-radius: 16px;">
+      <div style="font-size: 1.2rem; font-weight: 800; letter-spacing: 0.04em; color: var(--text-main); margin-bottom: 0.4rem;">
+        NETH MEDIA SOLUTIONS
+      </div>
+      <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; margin-bottom: 0.8rem;">
+        Architectural Design, 3D Photorealistic Visualizations & Construction Consultancy
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 650px; margin: 0 auto 1rem;">
+        Architectural House Plan Proposal for Lot 1 (4.34 Perches), Bandaranayakapura Road, Welikada, Rajagiriya (KMC Limits). Prepared based on Survey Plan No. 11601.
+      </p>
+      <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem; display: inline-block;">
+        © 2026 Neth Media Solutions. All Rights Reserved. Prepared for Client Review.
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const planData = {
+      gf: {
+        title: "බිම් මහල සැලැස්ම (Ground Floor Plan)",
+        img: "drawings/ground_floor_plan.png",
+        scheduleTitle: "📋 බිම් මහලේ කාමර විස්තරය",
+        rooms: [
+          { name: "කාමරය 1 (Room 1 - Front Right)", sub: "කාර්යාලය / නිදන කාමරය", dim: "11' 0\" x 9' 0\" (99 sq.ft)" },
+          { name: "කාමරය 2 (Room 2 - Mid Right)", sub: "නිදන කාමරය (Bed Room)", dim: "11' 0\" x 9' 0\" (99 sq.ft)" },
+          { name: "කාමරය 3 (Room 3 - Mid Right)", sub: "නිදන කාමරය (Bed Room)", dim: "11' 0\" x 9' 0\" (99 sq.ft)" },
+          { name: "කාමරය 4 (Room 4 - Rear Right)", sub: "නිදන කාමරය / කුස්සිය", dim: "11' 0\" x 9' 0\" (99 sq.ft)" },
+          { name: "වම් පස රථ ගාල (Car Park & Driveway)", sub: "වාහන 2ක් සහ බයික් සඳහා", dim: "13' 6\" x 29' 6\" (398 sq.ft)" },
+          { name: "වම් පස පඩි පෙළ (Rear Staircase)", sub: "පළමු මහලට පිවිසුම (යට Store/Toilet)", dim: "13' 6\" x 9' 6\" (128 sq.ft)" }
+        ],
+        highlights: [
+          "ප්‍රධාන රෝලර් ගේට්ටුව (12 ft) බණ්ඩාරනායකපුර පාරට සෘජුව මුහුණලා වම් පසින් පිහිටුවා ඇත.",
+          "වම් පසින් වාහන 2ක් සහ යතුරුපැදි සඳහා දිගු රථ ගාලක් සහ පිවිසුම් මාවතක් (Car Park & Driveway) වෙන් කර ඇත.",
+          "දකුණු පසින් අඩි 11' x 9' ප්‍රමාණයේ සමාන කාමර 4 ක් ඉදිරිපස සිට පිටුපසට පිළිවෙලින් ස්ථානගත කර ඇත.",
+          "වම් පස පිටුපසින් පඩි පෙළ පිහිටුවා ඇති අතර පළමු මහලේ මැද කොරිඩෝවට සෘජුවම සම්බන්ධ වේ."
+        ]
+      },
+      f1a: {
+        title: "පළමු මහල - Option A: සම්පූර්ණ කාමර 8 සැලැස්ම (Full 8 Rooms)",
+        img: "drawings/first_floor_plan_option_a.png",
+        scheduleTitle: "🏢 පළමු මහලේ කාමර විස්තරය (Option A - කාමර 8)",
+        rooms: [
+          { name: "කාමරය 1, 2, 3, 4 (වම් පැත්ත)", sub: "තනි තනි කාමර 4ක්", dim: "11' 0\" x 9' 0\" (කාමර 4ක්)" },
+          { name: "කාමරය 5, 6, 7, 8 (දකුණු පැත්ත)", sub: "තනි තනි කාමර 4ක් (පඩිපෙළට කාමර අහිමි නොවේ!)", dim: "11' 0\" x 9' 0\" (කාමර 4ක්)" },
+          { name: "මැද කොරිඩෝව (3 FT Central Corridor)", sub: "සියලු කාමර 8 ට සෘජු ප්‍රවේශය", dim: "3' 0\" x 39' 0\" (117 sq.ft)" },
+          { name: "පඩි පෙළ පිවිසුම (Staircase Landing)", sub: "සෘජුවම මැද කොරිඩෝවට විවෘත වේ", dim: "අඛණ්ඩ සෘජු පිවිසුම" },
+          { name: "ඉදිරිපස බැල්කනිය (Front Balcony)", sub: "පාර දෙසට විවෘත බැල්කනිය", dim: "26' 0\" x 3' 6\" (91 sq.ft)" }
+        ],
+        highlights: [
+          "පඩි පෙළ සඳහා කිසිදු කාමරයක් අහිමි කර නොමැත! දෙපැත්තට සමාන කාමර 4 බැගින් සම්පූර්ණ කාමර 8 ක්ම (Full 8 Rooms) පළමු මහලේ ඇත.",
+          "පඩි පෙළෙන් නැගි වහාම සෘජුවම මැද අඩි 3 කොරිඩෝවට පිවිසිය හැකි අතර එතැන් සිට සියලු කාමර 8 ට සහ ඉදිරිපස බැල්කනියට බාධාවකින් තොරව යා හැක.",
+          "බෝඩිං හෝ කුලී කාමර (Rental Units) සඳහා රාජගිරිය නගරයේ උපරිම මාසික කුලී ආදායමක් ලබාගත හැකි පරිපූර්ණ ආකෘතියකි."
+        ]
+      },
+      f1b: {
+        title: "පළමු මහල - Option B: විශාල කාමර 4 ක සුඛෝපභෝගී සැලැස්ම",
+        img: "drawings/first_floor_plan_option_b.png",
+        scheduleTitle: "🏡 පළමු මහලේ කාමර විස්තරය (Option B)",
+        rooms: [
+          { name: "Master Suite 1 & 2 (වම් පැත්ත)", sub: "නානකාමර සහ බැල්කනි සහිතයි", dim: "11' 0\" x 18' 6\" (කාමර 2ක්)" },
+          { name: "Master Suite 3 & 4 (දකුණු පැත්ත)", sub: "විශාල නිදන කාමර / සාලය", dim: "11' 0\" x 18' 6\" (කාමර 2ක්)" },
+          { name: "මැද කොරිඩෝව (Central Corridor)", sub: "ප්‍රධාන පිවිසුම් කොරිඩෝව", dim: "3' 0\" x 39' 0\" (117 sq.ft)" },
+          { name: "පඩි පෙළ පිවිසුම (Stair Landing)", sub: "සෘජුව කොරිඩෝවට සම්බන්ධයි", dim: "බාධාවකින් තොර ප්‍රවේශය" }
+        ],
+        highlights: [
+          "පවුලේ වාසය සඳහා ඉතා ඉඩකඩ සහිත (Spacious) විශාල Master Bedrooms 4 ක්.",
+          "මැදින් අඩි 3 ක කොරිඩෝවක් තබා දෙපැත්තට කාමර 2 බැගින් (දෙපැත්තට 4ක්) බෙදා ඇත.",
+          "පඩි පෙළෙන් සෘජුවම කොරිඩෝවට ඇතුළු විය හැක."
+        ]
+      },
+      roof: {
+        title: "වහල ස්ලැබ් සැලැස්ම (Rooftop Slab Plan)",
+        img: "drawings/rooftop_slab_plan.png",
+        scheduleTitle: "☀️ වහල ස්ලැබ් එකේ අංග",
+        rooms: [
+          { name: "විවෘත ටෙරස් ස්ලැබ් (Open Terrace)", sub: "උත්සව සහ විවේකය සඳහා", dim: "26' 0\" x 28' 0\" (728 sq.ft)" },
+          { name: "පඩි පෙළ ආවරණය (Staircase Head Room)", sub: "පියස්ස සහිත කාමරය", dim: "11' 6\" x 10' 0\" (115 sq.ft)" },
+          { name: "වතුර ටැංකි වේදිකාව (Overhead Tank)", sub: "2 x 1000L Tanks", dim: "7' 0\" x 4' 0\" (28 sq.ft)" },
+          { name: "සූර්ය පැනල කලාපය (Solar Panels)", sub: "5kW - 10kW On-grid", dim: "10' 0\" x 14' 0\" (140 sq.ft)" },
+          { name: "ආරක්ෂිත බැම්ම (Parapet Wall)", sub: "ස්ලැබ් එක වටාම ආරක්ෂාවට", dim: "උස අඩි 3' 0\" (3 Feet High)" }
+        ],
+        highlights: [
+          "සම්පූර්ණ ගොඩනැගිල්ලම ආවරණය වන පරිදි දැඩි ශක්තිමත් කොන්ක්‍රීට් ස්ලැබ් එකක් (Flat Concrete Slab).",
+          "පසුපස කෙලවරින් පඩි පෙළ ස්ලැබ් එක දක්වාම විහිදෙන අතර Staircase Head-room මගින් ආවරණය කර ඇත.",
+          "සූර්ය බලශක්තිය (Solar Net Metering) සඳහා විශිෂ්ට ඉඩකඩක් ඇති අතර විදුලි බිල බිංදුව දක්වා අඩු කරගත හැක.",
+          "වැසි ජලය කාන්දු නොවන සේ 1:100 බෑවුම සහ හොඳම තත්ත්වයේ Water-proofing යෙදීම අත්‍යවශ්‍ය වේ."
+        ]
+      },
+      '3d': {
+        title: "නවීන 3D බාහිර පෙනුම (Exterior 3D Visualization)",
+        img: "drawings/house_3d_render.jpg",
+        scheduleTitle: "🏠 ගොඩනැගිල්ලේ බාහිර පෙනුමේ විශේෂාංග",
+        rooms: [
+          { name: "වම් පස Car Park & Roller Gate", sub: "පාරට මුහුණලා ඇති රථ ගාල සහ ඇතුල්වීම", dim: "Ground Floor Left (13' 6\" x 29' 6\")" },
+          { name: "දකුණු පස ප්‍රධාන මුහුණත", sub: "කාමර 1 ඉදිරිපස සහ ප්‍රධාන පිවිසුම", dim: "Ground Floor Right" },
+          { name: "පළමු මහලේ බැල්කනිය", sub: "Toughened Glass Railing & Modern Windows", dim: "1st Floor Front" },
+          { name: "Rooftop Terrace & Parapet", sub: "කොන්ක්‍රීට් ස්ලැබ් එක සහ ආරක්ෂිත බැම්ම", dim: "Top Roof Slab" }
+        ],
+        highlights: [
+          "රාජගිරිය නගරයට ඔබින ජාත්‍යන්තර ප්‍රමිතියේ සුපිරි නවීන මෝස්තරය (Contemporary Minimalist Architecture).",
+          "වම් පස රථ ගාලට සෘජුවම ඇතුල් විය හැකි අඩි 12ක Motorized Roller Shutter Gate එකක් සහිත පුළුල් පිවිසුම.",
+          "දකුණු පස නිවාස පිවිසුම සහ පළමු මහලේ පාරට මුහුණලා ඇති සම්පූර්ණ බැල්කනිය (Glass Balustrade).",
+          "වහල ස්ලැබ් එක මත Roof Terrace එකක් හෝ විවේකාගාරයක් සහ සූර්ය පැනල සවිකිරීමට සුදුසු අලංකාර නිමාව."
+        ]
+      },
+      '3d_cut': {
+        title: "අභ්‍යන්තර 3D සැලැස්ම (Interior 3D Isometric Cutaway)",
+        img: "drawings/house_3d_cutaway.jpg",
+        scheduleTitle: "📐 ත්‍රිමාණ අභ්‍යන්තර සැකැස්ම සහ පිහිටීම",
+        rooms: [
+          { name: "වම් පස Driveway & Car Park", sub: "වාහන 2ක් Tandem නැවැත්වීමේ ඉඩ", dim: "13' 6\" x 29' 6\" (රථ ගාල)" },
+          { name: "පසුපස පඩි පෙළ (Staircase)", sub: "ඉහළ මහලට පිවිසෙන පඩි පෙළ", dim: "13' 6\" x 9' 6\"" },
+          { name: "දකුණු පස කාමර 4", sub: "ඉදිරිපස සිට පිටුපසට කාමර 4", dim: "11' 0\" x 9' 0\" බැගින්" },
+          { name: "කාමර දොරටු පිවිසුම", sub: "වම් පසින් සෑම කාමරයකටම වෙනම දොරවල්", dim: "පෞද්ගලික පිවිසුම්" }
+        ],
+        highlights: [
+          "බිම් මහලේ සහ පළමු මහලේ අභ්‍යන්තර කාමර සැකැස්ම සජීවීව දැකගත හැකි 3D Cutaway පෙනුම.",
+          "වම් පස රථ ගාල සහ පඩි පෙළ පිහිටීම සැලැස්මට අනුව සෘජුව දැකගත හැක.",
+          "කාමර 4 දකුණු පසින් පෙලගස්වා ඇති ආකාරය සේවාදායකයාට පහසුවෙන් තේරුම් ගත හැක."
+        ]
+      },
+      site: {
+        title: "ඉඩමේ පිහිටීම සහ මායිම් සැලැස්ම (Site Boundary Plan - Lot 1)",
+        img: "drawings/site_boundary_plan.png",
+        scheduleTitle: "📐 ඉඩමේ මිනුම් සහ විස්තරය",
+        rooms: [
+          { name: "ඉඩමේ ප්‍රමාණය (Total Extent)", sub: "ප්ලෑන් අංක 11601", dim: "පර්චස් 04.34 (109.8 m²)" },
+          { name: "දකුණු මායිම (Rear Boundary)", sub: "Lot No. 67 (P.P. 20394)", dim: "25.7 ft (~7.8 m)" },
+          { name: "නැගෙනහිර මායිම (Right Boundary)", sub: "Lot No. 53 (P.P. 7250)", dim: "39.7 ft (~12.1 m)" },
+          { name: "බටහිර මායිම (Left Boundary)", sub: "Lot No. 58 (P.P. 7250)", dim: "~35.2 ft (~10.7 m)" },
+          { name: "උතුරු මුහුණත (Road Frontage)", sub: "බණ්ඩාරනායකපුර පාර", dim: "අඩි 20 - 25 පළල පාර" }
+        ],
+        highlights: [
+          "ඉඩම කොළඹ දිස්ත්‍රික්කයේ කෝට්ටේ මහා නගර සභා සීමාවේ වැලිකඩ ග්‍රාම නිලධාරී වසමේ (514/B) පිහිටා ඇත.",
+          "බණ්ඩාරනායකපුර අඩි 20-25 පළල ප්‍රධාන කාපට් පාරට මුහුණලා ඇති බැවින් ඉතා ඉහළ වටිනාකමක් ඇත.",
+          "ඉඩමේ හැඩය සෘජුකෝණාස්‍ර හැඩයට ආසන්න බැවින් ගොඩනැගිල්ලේ ඉඩකඩ උපරිමයෙන් ප්‍රයෝජනයට ගත හැක.",
+          "පර්චස් 4.34 ක ඉඩමක සාර්ථකව වර්ග අඩි 2,800 ක පමණ ප්‍රයෝජනවත් ඉඩක් ලබාගත හැක."
+        ]
+      }
+    };
+
+    function switchTab(key) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      const data = planData[key];
+      if (!data) return;
+
+      document.getElementById('currentPlanTitle').innerText = data.title;
+      document.getElementById('planViewerImg').src = data.img;
+      document.getElementById('btnDownload').href = data.img;
+      document.getElementById('scheduleTitle').innerText = data.scheduleTitle;
+
+      // Render room schedule
+      const listEl = document.getElementById('roomScheduleList');
+      listEl.innerHTML = '';
+      data.rooms.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'room-item';
+        item.innerHTML = `
+          <div>
+            <div class="room-name">${r.name}</div>
+            <div class="room-sub">${r.sub}</div>
+          </div>
+          <div class="room-dim">${r.dim}</div>
+        `;
+        listEl.appendChild(item);
+      });
+
+      // Render highlights
+      const hlEl = document.getElementById('highlightsList');
+      hlEl.innerHTML = '';
+      data.highlights.forEach(h => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="bullet">✔</span> <span>${h}</span>`;
+        hlEl.appendChild(li);
+      });
+    }
+
+    // Initialize with Ground Floor
+    window.addEventListener('DOMContentLoaded', () => {
+      const data = planData['gf'];
+      document.getElementById('currentPlanTitle').innerText = data.title;
+      document.getElementById('planViewerImg').src = data.img;
+      document.getElementById('btnDownload').href = data.img;
+      document.getElementById('scheduleTitle').innerText = data.scheduleTitle;
+
+      const listEl = document.getElementById('roomScheduleList');
+      listEl.innerHTML = '';
+      data.rooms.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'room-item';
+        item.innerHTML = `
+          <div>
+            <div class="room-name">${r.name}</div>
+            <div class="room-sub">${r.sub}</div>
+          </div>
+          <div class="room-dim">${r.dim}</div>
+        `;
+        listEl.appendChild(item);
+      });
+
+      const hlEl = document.getElementById('highlightsList');
+      hlEl.innerHTML = '';
+      data.highlights.forEach(h => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="bullet">✔</span> <span>${h}</span>`;
+        hlEl.appendChild(li);
+      });
+    });
+  </script>
+</body>
+</html>
