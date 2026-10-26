@@ -176,7 +176,13 @@ class House3DViewer {
       grass: new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.95 }),
       roadAsphalt: new THREE.MeshStandardMaterial({ color: 0x181e2b, roughness: 0.92 }),
       carSilver: new THREE.MeshStandardMaterial({ color: 0xd4d4d8, roughness: 0.25, metalness: 0.9 }),
-      waterTank: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5, metalness: 0.2 })
+      waterTank: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5, metalness: 0.2 }),
+      ceramicWhite: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.15, metalness: 0.05 }),
+      chrome: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.1, metalness: 0.95 }),
+      bathTile: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.65, metalness: 0.1 }),
+      bathWall: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4, metalness: 0.05 }),
+      mirrorGlass: new THREE.MeshStandardMaterial({ color: 0xa5f3fc, roughness: 0.05, metalness: 0.95 }),
+      bathDoor: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.4, metalness: 0.2 })
     };
 
     this.buildSurroundings();
@@ -521,7 +527,7 @@ class House3DViewer {
     bw.castShadow = true;
     roomGroup.add(bw);
 
-    // Right wall with door to driveway/corridor (since driveway is on Right)
+    // Right wall with door opening to driveway/corridor (since driveway is on Right)
     const rw1 = new THREE.Mesh(new THREE.BoxGeometry(wt, h, d * 0.55), wallMat);
     rw1.position.set(w / 2 - wt / 2, h / 2, -d * 0.2);
     rw1.castShadow = true;
@@ -533,29 +539,192 @@ class House3DViewer {
     lw.castShadow = true;
     roomGroup.add(lw);
 
-    // Architectural Furniture
-    const bed = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 6.2), new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.8 }));
-    bed.position.set(-2, 0.6, -1);
+    // Built-in Private Attached Bathroom (3' 6" x 5' 6") along exterior wall
+    this.buildAttachedBathroom(roomGroup, false, w, h, d, name, 'Ground Floor (වම් පස)');
+
+    // Architectural Furniture in the remaining bedroom living space
+    const bed = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.2, 6.2), new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.8 }));
+    bed.position.set(2.0, 0.6, -0.6);
+    bed.castShadow = true;
     roomGroup.add(bed);
 
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.8, 1.5), new THREE.MeshStandardMaterial({ color: 0x92400e, roughness: 0.7 }));
-    desk.position.set(2, 0.9, 2);
+    // Pillows
+    const pillow1 = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.25, 0.9), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    pillow1.position.set(1.3, 1.3, -3.1);
+    roomGroup.add(pillow1);
+    const pillow2 = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.25, 0.9), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    pillow2.position.set(2.7, 1.3, -3.1);
+    roomGroup.add(pillow2);
+
+    // Study / Work Desk
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(2.8, 1.8, 1.4), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.7 }));
+    desk.position.set(2.0, 0.9, 3.2);
+    desk.castShadow = true;
     roomGroup.add(desk);
 
-    // Interactive Hitbox
+    // Wardrobe / Storage Closet
+    const wardrobe = new THREE.Mesh(new THREE.BoxGeometry(1.8, 6.8, 2.4), this.materials.accentWood);
+    wardrobe.position.set(-1.2, 3.4, 3.0);
+    wardrobe.castShadow = true;
+    roomGroup.add(wardrobe);
+
+    // Interactive Hitbox for Bedroom & Attached Bath
     const hitBox = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ visible: false }));
     hitBox.position.set(0, h / 2, 0);
     hitBox.userData = {
       type: 'room',
       floor: 'Ground Floor (වම් පස කාමර)',
-      name: name,
-      dimensions: dimDesc,
-      highlights: 'ස්වාධීන පිවිසුම, ස්වභාවික වාතාශ්‍රය සහ නගර සභා නීතිරීතිවලට අනුකූල ශක්තිමත් කොන්ක්‍රීට් කණු සැකැස්ම.'
+      name: `${name} + Attached Bathroom`,
+      dimensions: 'කාමරය: 8\' 0" x 9\' 0" | නානකාමරය: 3\' 6" x 5\' 6" (මුළු: 11\' x 9\')',
+      highlights: 'පුද්ගලික අනුබද්ධිත නානකාමරයක් (Attached Bathroom with WC, Shower, Basin) සහිත පරිපූර්ණ කාමර සැලැස්ම. ස්වාධීන පිවිසුම, ස්වභාවික වාතාශ්‍රය සහ රථ ගාලට සෘජු ප්‍රවේශය.'
     };
     roomGroup.add(hitBox);
     this.clickableObjects.push(hitBox);
 
     this.gfGroup.add(roomGroup);
+  }
+
+  buildAttachedBathroom(parentGroup, isRightSide, w, h, d, roomName, floorLabel) {
+    const bathGroup = new THREE.Group();
+    const bw = 3.6; // 3' 6" width
+    const bd = 5.2; // 5' 2" depth
+    const bh = 8.4; // 8' 5" partition wall height (allows top cross-ventilation)
+    const wt = 0.28; // partition wall thickness
+
+    // Position of bathroom inside room:
+    // Outer wall is at -w/2 if Left, or +w/2 if Right.
+    // Rear wall is at -d/2.
+    const bx = isRightSide ? (w / 2 - bw / 2) : (-w / 2 + bw / 2);
+    const bz = -d / 2 + bd / 2;
+
+    // 1. Water-resistant Anti-slip Floor Tile
+    const floorGeo = new THREE.BoxGeometry(bw, 0.08, bd);
+    const bathFloor = new THREE.Mesh(floorGeo, this.materials.bathTile);
+    bathFloor.position.set(bx, 0.04, bz);
+    bathFloor.receiveShadow = true;
+    bathGroup.add(bathFloor);
+
+    // 2. Bathroom Partition Walls
+    // Divider wall parallel to exterior boundary (separating bedroom from bath)
+    const divWallX = isRightSide ? (w / 2 - bw + wt / 2) : (-w / 2 + bw - wt / 2);
+    const divWall = new THREE.Mesh(new THREE.BoxGeometry(wt, bh, bd), this.materials.bathWall);
+    divWall.position.set(divWallX, bh / 2, bz);
+    divWall.castShadow = true;
+    bathGroup.add(divWall);
+
+    // Front wall facing bedroom with door opening
+    const frontWallZ = -d / 2 + bd - wt / 2;
+    const doorWidth = 2.0;
+    const wallPartW = Math.max(0.1, bw - doorWidth);
+    const frontWallX = isRightSide ? (bx - doorWidth / 2) : (bx + doorWidth / 2);
+    const frontWall = new THREE.Mesh(new THREE.BoxGeometry(wallPartW, bh, wt), this.materials.bathWall);
+    frontWall.position.set(frontWallX, bh / 2, frontWallZ);
+    frontWall.castShadow = true;
+    bathGroup.add(frontWall);
+
+    // Door Header lintel above door
+    const lintelH = bh - 7.0;
+    const doorCenterX = isRightSide ? (bx + wallPartW / 2) : (bx - wallPartW / 2);
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, lintelH, wt), this.materials.bathWall);
+    lintel.position.set(doorCenterX, 7.0 + lintelH / 2, frontWallZ);
+    bathGroup.add(lintel);
+
+    // Modern Bathroom Door (partially open 25° for 3D visibility)
+    const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(doorWidth * 0.95, 6.8, 0.1), this.materials.bathDoor);
+    doorMesh.position.set(doorCenterX, 3.4, frontWallZ);
+    doorMesh.rotation.y = isRightSide ? -0.4 : 0.4;
+    bathGroup.add(doorMesh);
+
+    // Door handle (chrome)
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 8), this.materials.chrome);
+    handle.position.set(doorCenterX + (isRightSide ? -0.7 : 0.7), 3.4, frontWallZ + 0.1);
+    bathGroup.add(handle);
+
+    // 3. Modern Dual-Flush Commode (WC)
+    const commodeX = isRightSide ? (bx + 0.6) : (bx - 0.6);
+    const commodeZ = -d / 2 + 0.9;
+
+    // Cistern / Tank against rear wall
+    const cistern = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 0.5), this.materials.ceramicWhite);
+    cistern.position.set(commodeX, 1.7, -d / 2 + 0.3);
+    cistern.castShadow = true;
+    bathGroup.add(cistern);
+
+    // Dual flush chrome buttons
+    const flushBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12), this.materials.chrome);
+    flushBtn.position.set(commodeX, 2.42, -d / 2 + 0.3);
+    bathGroup.add(flushBtn);
+
+    // Ceramic Toilet Bowl
+    const bowl = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.95, 1.3), this.materials.ceramicWhite);
+    bowl.position.set(commodeX, 0.55, commodeZ);
+    bowl.castShadow = true;
+    bathGroup.add(bowl);
+
+    // Toilet Seat Lid
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.05, 1.25), this.materials.ceramicWhite);
+    seat.position.set(commodeX, 1.05, commodeZ);
+    bathGroup.add(seat);
+
+    // 4. Wash Basin & Vanity Unit
+    const basinX = isRightSide ? (bx - 0.7) : (bx + 0.7);
+    const basinZ = bz - 0.2;
+
+    // Vanity Basin
+    const basin = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.35, 1.1), this.materials.ceramicWhite);
+    basin.position.set(basinX, 2.6, basinZ);
+    basin.castShadow = true;
+    bathGroup.add(basin);
+
+    // Chrome Faucet Tap
+    const faucet = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.35, 8), this.materials.chrome);
+    faucet.position.set(basinX, 2.9, basinZ - 0.3);
+    bathGroup.add(faucet);
+
+    // Mirror on divider wall above basin
+    const mirror = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.6, 1.0), this.materials.mirrorGlass);
+    mirror.position.set(isRightSide ? (w / 2 - bw + wt + 0.02) : (-w / 2 + bw - wt - 0.02), 4.2, basinZ);
+    bathGroup.add(mirror);
+
+    // 5. Shower Zone
+    const showerX = isRightSide ? (bx - 0.4) : (bx + 0.4);
+    const showerZ = frontWallZ - 0.9;
+
+    // Shower Floor Curb / Threshold
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(bw * 0.88, 0.12, 0.15), this.materials.darkAluminum);
+    curb.position.set(bx, 0.06, showerZ - 0.8);
+    bathGroup.add(curb);
+
+    // Overhead Shower Rose (Chrome)
+    const showerArm = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.8, 8), this.materials.chrome);
+    showerArm.rotation.x = Math.PI / 2;
+    showerArm.position.set(showerX, 6.8, showerZ - 0.4);
+    bathGroup.add(showerArm);
+
+    const showerHead = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.08, 16), this.materials.chrome);
+    showerHead.position.set(showerX, 6.75, showerZ);
+    bathGroup.add(showerHead);
+
+    // Hot & Cold Shower Mixer Knob
+    const mixer = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.12, 10), this.materials.chrome);
+    mixer.position.set(isRightSide ? (w / 2 - wt - 0.05) : (-w / 2 + wt + 0.05), 3.8, showerZ);
+    mixer.rotation.z = Math.PI / 2;
+    bathGroup.add(mixer);
+
+    // 6. Interactive Clickable Hitbox for Bathroom
+    const bathHit = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), new THREE.MeshBasicMaterial({ visible: false }));
+    bathHit.position.set(bx, bh / 2, bz);
+    bathHit.userData = {
+      type: 'bathroom',
+      floor: floorLabel || 'Attached Bathroom',
+      name: `${roomName} - අනුබද්ධිත නානකාමරය (Attached Bathroom)`,
+      dimensions: '3\' 6" x 5\' 6" (19.25 sq.ft)',
+      highlights: 'සම්පූර්ණ පහසුකම් සහිත නානකාමරය: පෝසිලේන් කොමෝඩ් (WC), හෝට් වෝටර් ෂවර් ඒකකය (Shower Area), වොෂ් බේසින් (Wash Basin) & කන්නාඩිය, ලිස්සා නොයන බිම් ටයිල් (Anti-slip Tiles) සහ ස්වභාවික වාතාශ්‍රය.'
+    };
+    bathGroup.add(bathHit);
+    this.clickableObjects.push(bathHit);
+
+    parentGroup.add(bathGroup);
   }
 
   buildStaircase(cx, baseY, cz, w, h, d) {
@@ -597,15 +766,63 @@ class House3DViewer {
     railPost.position.set(0, (h + 3) / 2, 0);
     stairGroup.add(railPost);
 
-    // Interactive hitbox
+    // Common Guest Toilet / Powder Room under Staircase Landing
+    const powderGroup = new THREE.Group();
+    powderGroup.position.set(0, 0, 3.5); // Under mid-landing
+
+    // Floor Tile
+    const pFloor = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.08, 4.2), this.materials.bathTile);
+    pFloor.position.set(0, 0.04, 0);
+    powderGroup.add(pFloor);
+
+    // Front Enclosing Wall under Landing
+    const pWallFront = new THREE.Mesh(new THREE.BoxGeometry(4.8, 5.0, 0.2), this.materials.wallWhite);
+    pWallFront.position.set(0, 2.5, -2.1);
+    powderGroup.add(pWallFront);
+
+    // Door
+    const pDoor = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.6, 0.1), this.materials.bathDoor);
+    pDoor.position.set(-0.8, 2.3, -2.1);
+    powderGroup.add(pDoor);
+
+    // Commode
+    const pCistern = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.2, 0.4), this.materials.ceramicWhite);
+    pCistern.position.set(1.2, 1.4, 1.6);
+    powderGroup.add(pCistern);
+
+    const pBowl = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 1.1), this.materials.ceramicWhite);
+    pBowl.position.set(1.2, 0.45, 1.0);
+    powderGroup.add(pBowl);
+
+    // Mini Wash Basin
+    const pBasin = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 0.7), this.materials.ceramicWhite);
+    pBasin.position.set(-1.2, 2.2, 1.2);
+    powderGroup.add(pBasin);
+
+    // Hitbox for Powder Room
+    const pHit = new THREE.Mesh(new THREE.BoxGeometry(4.8, 5.0, 4.2), new THREE.MeshBasicMaterial({ visible: false }));
+    pHit.position.set(0, 2.5, 0);
+    pHit.userData = {
+      type: 'bathroom',
+      floor: 'Ground Floor (පසුපස පඩිපෙළ යට)',
+      name: 'පොදු නානකාමරය / Powder Room (Under Staircase)',
+      dimensions: '4\' 6" x 4\' 0" (18 sq.ft)',
+      highlights: 'අමුත්තන්, කාර්යාලය සහ රියදුරු සඳහා පඩිපෙළ යට ඉඩකඩ උපරිමයෙන් ප්‍රයෝජනයට ගෙන සකස් කළ පහසු පොදු වැසිකිළිය (Commode + Basin).'
+    };
+    powderGroup.add(pHit);
+    this.clickableObjects.push(pHit);
+
+    stairGroup.add(powderGroup);
+
+    // Interactive hitbox for staircase
     const hitBox = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ visible: false }));
     hitBox.position.set(0, h / 2, 0);
     hitBox.userData = {
       type: 'stair',
       floor: 'Ground to 1st Floor (දකුණුපස පිටුපස)',
-      name: 'පසුපස ප්‍රධාන පඩි පෙළ (Rear Staircase)',
+      name: 'පසුපස ප්‍රධාන පඩි පෙළ (Rear Staircase) + Powder Room',
       dimensions: '13\' 6" x 9\' 6" (Flight පළල 4\' 0")',
-      highlights: 'පළමු මහලේ මැද කොරිඩෝවට සහ වහල ස්ලැබ් එකට සෘජුවම සම්බන්ධ වේ. යට කොටස Store හෝ Washroom එකක් සඳහා යොදාගත හැක.'
+      highlights: 'පළමු මහලේ මැද කොරිඩෝවට සහ වහල ස්ලැබ් එකට සෘජුවම සම්බන්ධ වේ. යට කොටසේ පොදු නානකාමරය (Powder Room) අඩංගු කර ඇත.'
     };
     stairGroup.add(hitBox);
     this.clickableObjects.push(hitBox);
@@ -781,32 +998,69 @@ class House3DViewer {
       this.f1Group.add(pRight);
     });
 
-    // 8 Room Interactive Hitboxes
-    roomZCoords.forEach((rz, idx) => {
-      const leftHit = new THREE.Mesh(new THREE.BoxGeometry(11, this.f1Height, 8.8), new THREE.MeshBasicMaterial({ visible: false }));
-      leftHit.position.set(-7.2, this.f1BaseY + this.f1Height / 2, rz);
-      leftHit.userData = {
-        type: 'room',
-        floor: 'First Floor (වම්පස කාමර 4)',
-        name: `පළමු මහල - කාමරය ${idx + 1} (වම්පස)`,
-        dimensions: '11\' 0" x 9\' 0" (99 sq.ft)',
-        highlights: 'මැද අඩි 3 කොරිඩෝවෙන් සෘජු ප්‍රවේශය. ස්වභාවික ආලෝකය සහ වාතාශ්‍රය.'
-      };
-      this.f1Group.add(leftHit);
-      this.clickableObjects.push(leftHit);
+    // 8 Room Layout with 8 Attached Bathrooms (Every single bedroom gets 1 private attached bathroom)
+    // Left Side 4 Rooms (cx = -7.2, isRightSide = false)
+    this.buildF1Room(1, -7.2, 14.25, 11.2, this.f1Height, 9, false);
+    this.buildF1Room(2, -7.2, 4.75, 11.2, this.f1Height, 9, false);
+    this.buildF1Room(3, -7.2, -4.75, 11.2, this.f1Height, 9, false);
+    this.buildF1Room(4, -7.2, -14.25, 11.2, this.f1Height, 9, false);
 
-      const rightHit = new THREE.Mesh(new THREE.BoxGeometry(11, this.f1Height, 8.8), new THREE.MeshBasicMaterial({ visible: false }));
-      rightHit.position.set(7.2, this.f1BaseY + this.f1Height / 2, rz);
-      rightHit.userData = {
-        type: 'room',
-        floor: 'First Floor (දකුණුපස කාමර 4)',
-        name: `පළමු මහල - කාමරය ${idx + 5} (දකුණුපස)`,
-        dimensions: '11\' 0" x 9\' 0" (99 sq.ft)',
-        highlights: 'පඩි පෙළට කාමර අහිමි නොවී සම්පූර්ණ කාමර 8 කින් යුත් ඉහළ ආදායම් ලැබිය හැකි සැලැස්ම. ඉදිරිපස කාමරය Balcony එකට විවෘත වේ.'
-      };
-      this.f1Group.add(rightHit);
-      this.clickableObjects.push(rightHit);
-    });
+    // Right Side 4 Rooms (cx = 7.2, isRightSide = true)
+    this.buildF1Room(5, 7.2, 14.25, 11.2, this.f1Height, 9, true);
+    this.buildF1Room(6, 7.2, 4.75, 11.2, this.f1Height, 9, true);
+    this.buildF1Room(7, 7.2, -4.75, 11.2, this.f1Height, 9, true);
+    this.buildF1Room(8, 7.2, -14.25, 11.2, this.f1Height, 9, true);
+  }
+
+  buildF1Room(roomNum, cx, cz, w, h, d, isRightSide) {
+    const roomGroup = new THREE.Group();
+    roomGroup.position.set(cx, this.f1BaseY, cz);
+
+    // Call buildAttachedBathroom for this room
+    this.buildAttachedBathroom(roomGroup, isRightSide, w, h, d, `කාමරය ${roomNum}`, `First Floor (${isRightSide ? 'දකුණුපස' : 'වම්පස'})`);
+
+    // Bedroom Furniture in the remaining space:
+    const bedX = isRightSide ? -2.0 : 2.0;
+    const deskX = isRightSide ? -2.0 : 2.0;
+    const wardX = isRightSide ? 1.2 : -1.2;
+
+    // Bed
+    const bed = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.2, 6.0), new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.8 }));
+    bed.position.set(bedX, 0.6, -0.6);
+    bed.castShadow = true;
+    roomGroup.add(bed);
+
+    // Pillow
+    const pillow = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.25, 0.9), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    pillow.position.set(bedX, 1.3, -3.0);
+    roomGroup.add(pillow);
+
+    // Study Desk
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.8, 1.3), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.7 }));
+    desk.position.set(deskX, 0.9, 3.2);
+    desk.castShadow = true;
+    roomGroup.add(desk);
+
+    // Wardrobe
+    const wardrobe = new THREE.Mesh(new THREE.BoxGeometry(1.6, 6.5, 2.2), this.materials.accentWood);
+    wardrobe.position.set(wardX, 3.25, 3.0);
+    wardrobe.castShadow = true;
+    roomGroup.add(wardrobe);
+
+    // Interactive Hitbox for Bedroom & Attached Bath
+    const hitBox = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ visible: false }));
+    hitBox.position.set(0, h / 2, 0);
+    hitBox.userData = {
+      type: 'room',
+      floor: `First Floor (${isRightSide ? 'දකුණුපස කාමර 4' : 'වම්පස කාමර 4'})`,
+      name: `පළමු මහල - කාමරය ${roomNum} + Attached Bathroom`,
+      dimensions: 'කාමරය: 8\' 0" x 9\' 0" | නානකාමරය: 3\' 6" x 5\' 6" (මුළු: 11\' x 9\')',
+      highlights: `සෑම කාමරයකටම වෙනම පුද්ගලික නානකාමරයක් (Private En-suite) සහිතයි. මැද අඩි 3 කොරිඩෝවෙන් සෘජු ප්‍රවේශය, ස්වභාවික ආලෝකය සහ වාතාශ්‍රය.`
+    };
+    roomGroup.add(hitBox);
+    this.clickableObjects.push(hitBox);
+
+    this.f1Group.add(roomGroup);
   }
 
   buildRooftop() {
@@ -1032,6 +1286,11 @@ class House3DViewer {
         // Top Plan view (Top = Road, Left = Rooms, Right = Gate/Car Park)
         targetPos.set(0, 72, 1);
         targetLook.set(0, 5, 0);
+        break;
+      case 'bathrooms':
+        // Top angled cutaway view focusing on the attached bathrooms line
+        targetPos.set(-22, 28, 4);
+        targetLook.set(-6, 8, 0);
         break;
       case 'driveway':
         // Close-up on the Right Driveway & Roller Gate
